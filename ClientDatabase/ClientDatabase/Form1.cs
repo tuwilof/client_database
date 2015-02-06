@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,9 +22,14 @@ namespace ClientDatabase
 
         private void connect()
         {
-            string connectionString = "Server = 127.0.0.1; Port = 5433; User Id=postgres; Password = 123456; Database = postgres;";
+            string connectionString = "Server = 127.0.0.1; Port = 5432; User Id=postgres; Password = 123456; Database = postgres;";
             NpgsqlConnection db = new NpgsqlConnection(connectionString);
             db.Open();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
