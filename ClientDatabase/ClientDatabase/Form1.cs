@@ -14,22 +14,66 @@ namespace ClientDatabase
 {
     public partial class Form1 : Form
     {
+        string connectionString = "Server = 127.0.0.1; Port = 5432; User Id=postgres; Password = 123456; Database = postgres;";
+
         public Form1()
         {
             InitializeComponent();
-            connect();
         }
 
-        private void connect()
+        private void viewTable(string sqlQuery)
         {
-            string connectionString = "Server = 127.0.0.1; Port = 5432; User Id=postgres; Password = 123456; Database = postgres;";
-            NpgsqlConnection db = new NpgsqlConnection(connectionString);
-            db.Open();
+            dataGridView1.Columns.Clear();
+            try
+            {
+                NpgsqlConnection connDB = new NpgsqlConnection(connectionString);
+                connDB.Open();
+                NpgsqlCommand command = new NpgsqlCommand(sqlQuery, connDB);
+
+                NpgsqlDataReader dr = command.ExecuteReader();
+                for (int i = 0; i < dr.FieldCount; i++)
+                {
+                    DataGridViewTextBoxColumn col = new DataGridViewTextBoxColumn();
+                    dataGridView1.Columns.Add(col);
+                    col.Name = dr.GetName(i);
+                }
+
+                while (dr.Read())
+                {
+                    int fieldcount = dr.FieldCount;
+                    string[] strArr = new string[fieldcount];
+                    for (int i = 0; i < fieldcount; i++)
+                    {
+                        strArr[i] = dr[i].ToString();
+                    }
+                    dataGridView1.Rows.Add(strArr);
+                }
+                connDB.Close();
+            }
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show(""+ex, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            viewTable("select * from public.persony");
+        }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            viewTable("select * from public.kafedry");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            viewTable("select * from public.distsipliny");
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            viewTable("select * from public.gruppy");
         }
     }
 }
