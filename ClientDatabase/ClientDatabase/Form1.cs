@@ -49,6 +49,7 @@ namespace ClientDatabase
                     dataGridView1.Rows.Add(strArr);
                 }
                 connDB.Close();
+                dataGridView1.AutoResizeColumns();
             }
             catch (NpgsqlException ex)
             {
