@@ -58,22 +58,37 @@ namespace ClientDatabase
 
         private void button1_Click(object sender, EventArgs e)
         {
-            viewTable("select * from public.persony");
+            viewTable("select * from public.abiturient");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            viewTable("select * from public.kafedry");
+            viewTable("select * from public.distsiplina");
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            viewTable("select * from public.distsipliny");
+            viewTable("select * from public.spetsialnost");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            viewTable("select * from public.gruppy");
+            viewTable("select * from public.kafedra");
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            viewTable("select * from public.prepodavatel");
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            viewTable("select * from public.ekzamen");
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            viewTable("select * from public.vedomost");
         }
     }
 }
