@@ -18,9 +18,9 @@ namespace ClientDatabase
             columns = new List<Column>();
         }
 
-        private void fillingColumn(string myType, string myNameRu, string myNameEn)
+        private void fillingColumn(string myType, string myNameRu, string myNameEn, string myParentTable)
         {
-            columns.Add(new Column() { type = myType, nameRu = myNameRu, nameEn = myNameEn });
+            columns.Add(new Column() { type = myType, nameRu = myNameRu, nameEn = myNameEn, parentTable = myParentTable });
         } 
 
         public void run(ref Model model)
@@ -28,58 +28,55 @@ namespace ClientDatabase
             List<Table>tables = new List<Table>();
 
             fillingTable("Абитуриенты", "Abiturient");
-            fillingColumn("int", "Номер аттестата", "Id_attestata");
-            fillingColumn("string", "Фамилия", "Familiya");
-            fillingColumn("string", "Имя", "Imya");
-            fillingColumn("string", "Отчество", "Otchestvo");
-            fillingColumn("string", "Адрес", "Adres");
+            fillingColumn("int", "Номер аттестата", "Id_attestata", "null");
+            fillingColumn("string", "Фамилия", "Familiya", "null");
+            fillingColumn("string", "Имя", "Imya", "null");
+            fillingColumn("string", "Отчество", "Otchestvo", "null");
+            fillingColumn("string", "Адрес", "Adres", "null");
             table.column = columns;
             tables.Add(table);
 
             fillingTable("Дисциплина", "Distsiplina");
-            fillingColumn("int", "Номер дисциплины", "Id_distsipliny");
-            fillingColumn("string", "Название дисциплины", "Nazvanie_distsipliny");
+            fillingColumn("int", "Номер дисциплины", "Id_distsipliny", "null");
+            fillingColumn("string", "Название дисциплины", "Nazvanie_distsipliny", "null");
             table.column = columns;
             tables.Add(table);
 
             fillingTable("Специальность", "Spetsialnost");
-            fillingColumn("int", "Номер специальности", "Id_spetsialnosti");
-            fillingColumn("string", "Название специальности", "Nazvanie_spetsialnosti");
+            fillingColumn("int", "Номер специальности", "Id_spetsialnosti", "null");
+            fillingColumn("string", "Название специальности", "Nazvanie_spetsialnosti", "null");
             table.column = columns;
             tables.Add(table);
 
             fillingTable("Кафедра", "Kafedra");
-            fillingColumn("int", "Номер кафедры", "Id_kafedry");
-            fillingColumn("string", "Название кафедры", "Nazvanie_kafedry");
+            fillingColumn("int", "Номер кафедры", "Id_kafedry", "null");
+            fillingColumn("string", "Название кафедры", "Nazvanie_kafedry", "null");
             table.column = columns;
             tables.Add(table);
 
             fillingTable("Преподаватель", "Prepodavatel");
-            fillingColumn("int", "Номер табельного номера", "Id_tabelnyy_nomer");
-            fillingColumn("string", "Фамилия", "Familiya");
-            fillingColumn("string", "Имя", "Imya");
-            fillingColumn("string", "Отчество", "Otchestvo");
-            fillingColumn("int", "Номер кафедры", "Id_kafedry");
+            fillingColumn("int", "Номер табельного номера", "Id_tabelnogo_nomer", "null");
+            fillingColumn("string", "Фамилия", "Familiya", "null");
+            fillingColumn("string", "Имя", "Imya", "null");
+            fillingColumn("string", "Отчество", "Otchestvo", "null");
+            fillingColumn("foreignKey", "Номер кафедры", "Id_kafedry", "Kafedra");
             table.column = columns;
             tables.Add(table);
 
             fillingTable("Экзамены", "Ekzamen");
-            fillingColumn("int", "Номер экзамена", "Id_ekzamena");
-            fillingColumn("int", "Номер аттестата", "Id_attestata");
-            fillingColumn("int", "Номер табельного номера", "Id_tabelnyy_nomer");
-            fillingColumn("int", "Номер дисциплины", "Id_distsipliny");
-            fillingColumn("date", "Дата сдачи экзамена", "Data_sdachi_ekzamena");
-            fillingColumn("int", "Оценка", "Otsenka");
+            fillingColumn("int", "Номер экзамена", "Id_ekzamena", "null");
+            fillingColumn("date", "Дата сдачи экзамена", "Data_sdachi_ekzamena", "null");
+            fillingColumn("int", "Оценка", "Otsenka", "null");
+            fillingColumn("foreignKey", "Номер аттестата", "Id_attestata", "Abiturient");
+            fillingColumn("foreignKey", "Номер табельного номера", "Id_tabelnogo_nomer", "Prepodavatel");
+            fillingColumn("foreignKey", "Номер дисциплины", "Id_distsipliny", "Distsiplina");
+            fillingColumn("foreignKey", "Номер ведомости", "Id_vedomosti", "Vedomost");
             table.column = columns;
             tables.Add(table);
 
             fillingTable("Ведомость", "Vedomost");
-            fillingColumn("int", "Номер ведомости", "Id_vedomosti");
-            fillingColumn("int", "Номер экзамена", "Id_ekzamena");
-            fillingColumn("int", "Номер аттестата", "Id_attestata");
-            fillingColumn("int", "Номер табельного номера", "Id_tabelnyy_nomer");
-            fillingColumn("int", "Номер дисциплины", "Id_distsipliny");
-            fillingColumn("int", "Номер специальности", "Id_spetsialnosti");
+            fillingColumn("int", "Номер ведомости", "Id_vedomosti", "null");
+            fillingColumn("foreignKey", "Номер специальности", "Id_spetsialnosti", "Spetsialnost");
             table.column = columns;
             tables.Add(table);
 

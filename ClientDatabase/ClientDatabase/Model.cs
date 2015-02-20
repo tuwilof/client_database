@@ -23,5 +23,6 @@ namespace ClientDatabase
         public string type;
         public string nameRu;
         public string nameEn;
+        public string parentTable;
     }
 }

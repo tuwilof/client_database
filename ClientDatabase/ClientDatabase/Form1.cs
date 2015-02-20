@@ -19,6 +19,7 @@ namespace ClientDatabase
         Model model;
         Button button;
         TextBox[] textBoxes;
+        ComboBox[] comboBoxes;
         Table table;
         Form f;
 
@@ -165,9 +166,10 @@ namespace ClientDatabase
 
             int i = 0;
             textBoxes = new TextBox[table.column.Count];
+            comboBoxes = new ComboBox[table.column.Count];
             foreach (var column in table.column)
             {
-                if (column.type == "string" || column.type == "int")
+                if (column.type == "string" || column.type == "int" || column.type == "date")
                 {
                     Label l = new Label();
                     l.Text = column.nameRu;
@@ -178,6 +180,20 @@ namespace ClientDatabase
                     textBoxes[i] = new TextBox();
                     textBoxes[i].Location = new Point(180, 25 + i * 23);
                     f.Controls.Add(textBoxes[i]);
+                }
+                else if (column.type == "foreignKey")
+                {
+                    Label l = new Label();
+                    l.Text = column.nameRu;
+                    l.Location = new Point(25, 25 + i * 23);
+                    l.Width = 150;
+                    f.Controls.Add(l);
+
+                    comboBoxes[i] = new ComboBox();
+                    comboBoxes[i].Location = new Point(180, 25 + i * 23);
+                    fillingComboBox(ref comboBoxes[i], column.parentTable);
+
+                    f.Controls.Add(comboBoxes[i]);
                 }
                 i++;
             }
@@ -206,6 +222,14 @@ namespace ClientDatabase
                 {
                     str += textBoxes[i].Text;
                 }
+                else if (table.column[i].type == "date")
+                {
+                    str += "'" + textBoxes[i].Text + "'";
+                }
+                else if (table.column[i].type == "foreignKey")
+                {
+                    str += comboBoxes[i].Text;
+                }
                 if (i != textBoxes.Length - 1)
                 {
                     str += ", ";
@@ -226,6 +250,34 @@ namespace ClientDatabase
                 NpgsqlCommand delCommand = new NpgsqlCommand(strSQLQuery, connDB);
 
                 delCommand.ExecuteNonQuery();
+                connDB.Close();
+            }
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show("" + ex, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void fillingComboBox(ref ComboBox comboBox, string tableName)
+        {
+            try
+            {
+                NpgsqlConnection connDB = new NpgsqlConnection(connectionString);
+                connDB.Open();
+                NpgsqlCommand command = new NpgsqlCommand("select * from public." + tableName, connDB);
+
+                NpgsqlDataReader dr = command.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    int fieldcount = dr.FieldCount;
+                    string[] strArr = new string[fieldcount];
+                    for (int i = 0; i < fieldcount; i++)
+                    {
+                        strArr[i] = dr[i].ToString();
+                    }
+                    comboBox.Items.Add(strArr[0]);
+                }
                 connDB.Close();
             }
             catch (NpgsqlException ex)
