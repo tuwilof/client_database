@@ -171,6 +171,11 @@ namespace ClientDatabase
 
         private void formTheShape()
         {
+            if (operation == "delete")
+            {
+                delete();
+                return;
+            }
             string[] strArrBaselineData = new string[0];
             getBaselineData(ref strArrBaselineData);
             f = new Form();
@@ -366,6 +371,31 @@ namespace ClientDatabase
                     strArrBaselineData[i] = dr[i].ToString();
                 }
                 connDB.Close();
+            }
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show("" + ex, "Ошибка выделения", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            operation = "delete";
+            fork();
+        }
+
+        private void delete()
+        {
+            try
+            {
+                stdId = dataGridView1.CurrentCell.Value.ToString();
+                int id = Int32.Parse(stdId);
+                NpgsqlConnection connDB = new NpgsqlConnection(connectionString);
+                connDB.Open();
+                string str = "DELETE FROM " + type + " WHERE " + nameIndex + " = " + stdId + ";";
+                sqlQuery(str);
+                connDB.Close();
+                viewTable("select * from public." + type + "");
             }
             catch (NpgsqlException ex)
             {
