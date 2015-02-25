@@ -22,6 +22,9 @@ namespace ClientDatabase
         ComboBox[] comboBoxes;
         Table table;
         Form f;
+        string nameIndex;
+        string operation;
+        string stdId;
 
         public Form1()
         {
@@ -112,6 +115,7 @@ namespace ClientDatabase
 
         private void button9_Click(object sender, EventArgs e)
         {
+            operation = "add";
             fork();
         }
 
@@ -124,42 +128,51 @@ namespace ClientDatabase
             else if (type == "abiturient")
             {
                 table = model.table[0];
-                addedChangedForm();
+                nameIndex = "Id_attestata";
+                formTheShape();
             }
             else if (type == "distsiplina")
             {
                 table = model.table[1];
-                addedChangedForm();
+                nameIndex = "Id_distsipliny";
+                formTheShape();
             }
             else if (type == "spetsialnost")
             {
                 table = model.table[2];
-                addedChangedForm();
+                nameIndex = "Id_spetsialnosti";
+                formTheShape();
             }
             else if (type == "kafedra")
             {
                 table = model.table[3];
-                addedChangedForm();
+                nameIndex = "Id_kafedry";
+                formTheShape();
             }
             else if (type == "prepodavatel")
             {
                 table = model.table[4];
-                addedChangedForm();
+                nameIndex = "Id_tabelnogo_nomer";
+                formTheShape();
             }
             else if (type == "ekzamen")
             {
                 table = model.table[5];
-                addedChangedForm();
+                nameIndex = "Id_ekzamena";
+                formTheShape();
             }
             else if (type == "vedomost")
             {
                 table = model.table[6];
-                addedChangedForm();
+                nameIndex = "Id_vedomosti";
+                formTheShape();
             }
         }
 
-        private void addedChangedForm()
+        private void formTheShape()
         {
+            string[] strArrBaselineData = new string[0];
+            getBaselineData(ref strArrBaselineData);
             f = new Form();
             f.Width = 320;
             f.Text = table.nameRu;
@@ -179,6 +192,12 @@ namespace ClientDatabase
 
                     textBoxes[i] = new TextBox();
                     textBoxes[i].Location = new Point(180, 25 + i * 23);
+                    if (operation == "edit")
+                    {
+                        textBoxes[i].Text = "" + strArrBaselineData[i];
+                        if (i == 0)
+                            textBoxes[i].ReadOnly = true;
+                    }
                     f.Controls.Add(textBoxes[i]);
                 }
                 else if (column.type == "foreignKey")
@@ -192,7 +211,10 @@ namespace ClientDatabase
                     comboBoxes[i] = new ComboBox();
                     comboBoxes[i].Location = new Point(180, 25 + i * 23);
                     fillingComboBox(ref comboBoxes[i], column.parentTable);
-
+                    if (operation == "edit")
+                    {
+                        comboBoxes[i].Text = "" + strArrBaselineData[i];
+                    }
                     f.Controls.Add(comboBoxes[i]);
                 }
                 i++;
@@ -211,34 +233,68 @@ namespace ClientDatabase
 
         private void button_Click(object sender, EventArgs e)
         {
-            string str = "INSERT INTO " + table.nameEn + " VALUES (";
-            for (int i = 0; i < textBoxes.Length; i++)
+            if (operation == "add")
             {
-                if (table.column[i].type == "string")
+                string str = "INSERT INTO " + table.nameEn + " VALUES (";
+                for (int i = 0; i < textBoxes.Length; i++)
                 {
-                    str += "'" + textBoxes[i].Text + "'";
+                    if (table.column[i].type == "string")
+                    {
+                        str += "'" + textBoxes[i].Text + "'";
+                    }
+                    else if (table.column[i].type == "int")
+                    {
+                        str += textBoxes[i].Text;
+                    }
+                    else if (table.column[i].type == "date")
+                    {
+                        str += "'" + textBoxes[i].Text + "'";
+                    }
+                    else if (table.column[i].type == "foreignKey")
+                    {
+                        str += comboBoxes[i].Text;
+                    }
+                    if (i != textBoxes.Length - 1)
+                    {
+                        str += ", ";
+                    }
                 }
-                else if (table.column[i].type == "int")
-                {
-                    str += textBoxes[i].Text;
-                }
-                else if (table.column[i].type == "date")
-                {
-                    str += "'" + textBoxes[i].Text + "'";
-                }
-                else if (table.column[i].type == "foreignKey")
-                {
-                    str += comboBoxes[i].Text;
-                }
-                if (i != textBoxes.Length - 1)
-                {
-                    str += ", ";
-                }
+                str += ");";
+                sqlQuery(str);
+                viewTable("select * from public." + table.nameEn + "");
+                f.Close();
             }
-            str += ");";
-            sqlQuery(str);
-            viewTable("select * from public." + table.nameEn + "");
-            f.Close();
+            else if (operation == "edit")
+            {
+                string str = "UPDATE " + table.nameEn + " SET ";
+                for (int i = 0; i < textBoxes.Length; i++)
+                {
+                    if (table.column[i].type == "string")
+                    {
+                        str += table.column[i].nameEn + " = '" + textBoxes[i].Text + "'";
+                    }
+                    else if (table.column[i].type == "int")
+                    {
+                        str += table.column[i].nameEn + " = " + textBoxes[i].Text;
+                    }
+                    else if (table.column[i].type == "date")
+                    {
+                        str += table.column[i].nameEn + " = '" + textBoxes[i].Text + "'";
+                    }
+                    else if (table.column[i].type == "foreignKey")
+                    {
+                        str += table.column[i].nameEn + " = " + comboBoxes[i].Text;
+                    }
+                    if (i != textBoxes.Length - 1)
+                    {
+                        str += ", ";
+                    }
+                }
+                str += " WHERE " + nameIndex + " = " + stdId + ";";
+                sqlQuery(str);
+                viewTable("select * from public." + table.nameEn + "");
+                f.Close();
+            }
         }
 
         private void sqlQuery(String strSQLQuery)
@@ -283,6 +339,37 @@ namespace ClientDatabase
             catch (NpgsqlException ex)
             {
                 MessageBox.Show("" + ex, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            operation = "edit";
+            fork();
+        }
+
+        private void getBaselineData(ref string[] strArrBaselineData)
+        {
+            try
+            {
+                stdId = dataGridView1.CurrentCell.Value.ToString();
+                int id = Int32.Parse(stdId);
+                NpgsqlConnection connDB = new NpgsqlConnection(connectionString);
+                connDB.Open();
+                NpgsqlCommand command = new NpgsqlCommand("select * from public." + type + " where (" + nameIndex + "='" + stdId + "')", connDB);
+                NpgsqlDataReader dr = command.ExecuteReader();
+                dr.Read();
+                int fieldcount = dr.FieldCount;
+                strArrBaselineData = new string[fieldcount];
+                for (int i = 0; i < fieldcount; i++)
+                {
+                    strArrBaselineData[i] = dr[i].ToString();
+                }
+                connDB.Close();
+            }
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show("" + ex, "Ошибка выделения", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
