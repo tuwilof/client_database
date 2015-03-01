@@ -152,7 +152,7 @@ namespace ClientDatabase
             else if (type == "prepodavatel")
             {
                 table = model.table[4];
-                nameIndex = "Id_tabelnogo_nomer";
+                nameIndex = "Id_tabelnogo_nomera";
                 formTheShape();
             }
             else if (type == "ekzamen")
@@ -177,7 +177,8 @@ namespace ClientDatabase
                 return;
             }
             string[] strArrBaselineData = new string[0];
-            getBaselineData(ref strArrBaselineData);
+            if (dataGridView1.Rows.Count > 1)
+                getBaselineData(ref strArrBaselineData);
             f = new Form();
             f.Width = 320;
             f.Text = table.nameRu;
@@ -202,6 +203,14 @@ namespace ClientDatabase
                         textBoxes[i].Text = "" + strArrBaselineData[i];
                         if (i == 0)
                             textBoxes[i].ReadOnly = true;
+                    }
+                    else if (column.nameEn == "Id_distsipliny" || column.nameEn == "Id_spetsialnosti" || column.nameEn == "Id_kafedry" || column.nameEn == "Id_ekzamena" || column.nameEn == "Id_vedomosti")
+                    {
+                        if (dataGridView1.Rows.Count > 1)
+                            textBoxes[i].Text = "" + (Int32.Parse("" + dataGridView1.Rows[dataGridView1.Rows.Count - 2].Cells[0].Value) + 1);
+                        else
+                            textBoxes[i].Text = "1";
+                        textBoxes[i].ReadOnly = true;
                     }
                     f.Controls.Add(textBoxes[i]);
                 }

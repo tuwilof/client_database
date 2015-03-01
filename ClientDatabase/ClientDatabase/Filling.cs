@@ -55,7 +55,7 @@ namespace ClientDatabase
             tables.Add(table);
 
             fillingTable("Преподаватель", "Prepodavatel");
-            fillingColumn("int", "Номер табельного номера", "Id_tabelnogo_nomer", "null");
+            fillingColumn("int", "Табельный номер", "Id_tabelnogo_nomer", "null");
             fillingColumn("string", "Фамилия", "Familiya", "null");
             fillingColumn("string", "Имя", "Imya", "null");
             fillingColumn("string", "Отчество", "Otchestvo", "null");
@@ -68,7 +68,7 @@ namespace ClientDatabase
             fillingColumn("date", "Дата сдачи экзамена", "Data_sdachi_ekzamena", "null");
             fillingColumn("int", "Оценка", "Otsenka", "null");
             fillingColumn("foreignKey", "Номер аттестата", "Id_attestata", "Abiturient");
-            fillingColumn("foreignKey", "Номер табельного номера", "Id_tabelnogo_nomer", "Prepodavatel");
+            fillingColumn("foreignKey", "Табельный номер", "Id_tabelnogo_nomer", "Prepodavatel");
             fillingColumn("foreignKey", "Номер дисциплины", "Id_distsipliny", "Distsiplina");
             fillingColumn("foreignKey", "Номер ведомости", "Id_vedomosti", "Vedomost");
             table.column = columns;
